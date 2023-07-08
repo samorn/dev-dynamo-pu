@@ -12,6 +12,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Areas\ApiV1\Models\ProjectReponse.cs" />
+    <Compile Remove="Data\AppDb.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.16" />
@@ -25,6 +26,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DevDynamo.Models\DevDynamo.Models.csproj" />
+    <ProjectReference Include="..\DevDynamo.Services\DevDynamo.Services.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="WorkflowTemplates\Default.txt">
