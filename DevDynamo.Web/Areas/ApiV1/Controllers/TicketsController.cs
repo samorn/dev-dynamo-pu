@@ -40,7 +40,7 @@ namespace DevDynamo.Web.Areas.ApiV1.Controllers
                 return AppNotFound(nameof(Ticket), request.ProjectId);
             }
 
-            //Initial Status
+            // Initial Status
             var workflow = project.WorkflowSteps.SingleOrDefault(x => x.FromStatus == "[*]");
             if (workflow is null)
             {
@@ -74,8 +74,27 @@ namespace DevDynamo.Web.Areas.ApiV1.Controllers
             return NoContent();
         }
 
+        [HttpGet("{ticket_id}/next-status")]
+        public ActionResult<List<TicketNextStatusResponse>> GetAvailableNextTicketStatus(int ticket_id)
+        {
+            var ticket = db.Tickets.FirstOrDefault(x => x.Id == ticket_id);
+            if (ticket == null)
+            {
+                return AppNotFound($"Ticket is not found {ticket_id}");
+            }
 
-        //PUT /api/v1/tickets/{ticket_id}/status/{target_status_name}
+            var workFlowsSteps = db.WorkflowSteps.Where(x => x.ProjectId == ticket.ProjectId && x.FromStatus == ticket.Status).
+                                 Select(x => new TicketNextStatusResponse { Action = x.Action, NextStatus = x.ToStatus }).ToList();
+
+            if (!workFlowsSteps.Any())
+            {
+                return AppNotFound($"Workflow step not found");
+            }
+
+            return workFlowsSteps;
+        }
+
+        // PUT /api/v1/tickets/{ticket_id}/status/{target_status_name}
         [HttpPut("{ticket_id}/status/{target_status_name}")]
         public ActionResult<TicketResponse> ChangeTicketStatus(int ticket_id, string target_status_name)
         {
@@ -115,11 +134,6 @@ namespace DevDynamo.Web.Areas.ApiV1.Controllers
             {
                 return BadRequest(new ProblemDetails() { Title = "Error updating data" + ex.Message });
             }
-
-
-
         }
-
-
     }
 }
